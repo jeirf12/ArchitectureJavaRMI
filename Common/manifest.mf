@@ -1,0 +1,1 @@
+Class-Path: .\jaudiotagger-2.0.2.jar
