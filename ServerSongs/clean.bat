@@ -1,6 +1,4 @@
 @echo off
 
-rd /s/q bin
-del ServerSongs.jar
-del misCanciones\*.mp3
-rd /s/q misCanciones
+rd /s/q bin misCanciones > NUL 2>&1
+del *.jar > NUL 2>&1

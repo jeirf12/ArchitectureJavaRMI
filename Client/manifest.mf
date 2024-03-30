@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 X-COMMENT: Main-Class will be added automatically by build
-Class-Path: ..\Common\Common.jar ..\Common\jaudiotagger-2.0.2.jar
+Class-Path: ..\Common\Common.jar ..\Common\jaudiotagger-2.0.3.jar
 Main-Class: client.services.ClientObject
