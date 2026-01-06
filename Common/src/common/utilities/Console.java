@@ -3,12 +3,23 @@ package common.utilities;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  *
  * @author jhonfer
  */
 public class Console {
+    
+    private static Map<String, Function<String, Optional<?>>> dataTypeMaps = Map.of(
+        "String", value -> !isNumber(value) ? Optional.of(value.trim()) : Optional.empty(),
+        "Double", value -> isNumber(value) && value.contains(".") ? Optional.of(Double.valueOf(value.trim())) : Optional.empty(),
+        "Float", value -> isNumber(value) && value.contains(".") ? Optional.of(Float.valueOf(value.trim())) : Optional.empty(),
+        "Integer", value -> isNumber(value) ? Optional.of(Integer.valueOf(value.trim())) : Optional.empty()
+    );
+
     public static <T> boolean writeJumpLine(T tagMessage, boolean isMessage) {
         try {
             System.out.println(tagMessage);
@@ -57,28 +68,11 @@ public class Console {
         try {
             value = input.readLine();
             option = ((Object) chainInput).getClass().getSimpleName();
-            switch (option) {
-                case "String" -> {
-                    if (!isNumber(value)) {
-                        chainInput = (T) String.valueOf(value.trim());
-                    }
-                }
-                case "Double" -> {
-                    if (isNumber(value) && value.contains(".")) {
-                        chainInput = (T) Double.valueOf(value.trim());
-                    }
-                }
-                case "Float" -> {
-                    if (isNumber(value) && value.contains(".")) {
-                        chainInput = (T) Float.valueOf(value.trim());
-                    }
-                }
-                case "Integer" -> {
-                    if (isNumber(value)) {
-                        chainInput = (T) Integer.valueOf(value.trim());
-                    }
-                }
-            }
+            chainInput = dataTypeMaps.get(option)
+                            .apply(value)
+                            .map(v -> (T) v)
+                            .orElse(backupChainInput);
+            
             if (isMessage) {
                 writeJumpLine("Se ha leido correctamente!", false);
             }

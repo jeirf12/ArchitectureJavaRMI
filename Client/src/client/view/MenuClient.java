@@ -7,10 +7,17 @@ import common.utilities.Audio;
 import common.utilities.Console;
 import common.utilities.Menu;
 import java.util.List;
+import java.util.Map;
 
 
 public class MenuClient extends Menu {
     private IControllerManageSong objRemoteSong;
+
+    private Map<Integer, Runnable> actions = Map.of(
+        1, () -> this.registerSong(),
+        2, () -> this.showSongs(),
+        3, () -> Console.writeJumpLine("Salir...", false)
+    );
     
     public MenuClient(String title, String [] options, IControllerManageSong objRemoteSong) {
         super(title, options);
@@ -20,18 +27,12 @@ public class MenuClient extends Menu {
     
     @Override
     public void processOption() {
-        switch (option) {
-            case 1 -> {
-                this.registerSong();
-            }
-            case 2 -> {
-                this.showSongs();
-            }
-            case 3 -> {
-                Console.writeJumpLine("Salir...", false);
-            }
-        }
+        if (option > actions.size()) 
+            return;
+
+        actions.get(option).run();
     }
+
     private void registerSong() {
         try {
             boolean value = false;
@@ -53,16 +54,19 @@ public class MenuClient extends Menu {
     private void showSongs() {
         try {
             List<SongDTO> listSongs = this.objRemoteSong.listSong();
-            if(!listSongs.isEmpty()) {
-                int counter = 1;
-                Console.writeJumpLine("\n*** Información de las canciones ***", false);
-                for (SongDTO listSong : listSongs) {
-                    Console.writeJumpLine("\nCanción No " + counter, false);
-                    Console.writeJumpLine("Titulo: " + listSong.getTitle() +
-                            "\nArtista: " + listSong.getArtist() + 
-                            "\nTamaño: " + listSong.getSizeMB() + "KB\n", false);
-                    counter++;
-                }
+            if (listSongs.isEmpty()) {
+                Console.writeJumpLine("No hay canciones registradas aún", false);
+                return;
+            }
+
+            int counter = 1;
+            Console.writeJumpLine("\n*** Información de las canciones ***", false);
+            for (SongDTO listSong : listSongs) {
+                Console.writeJumpLine("\nCanción No " + counter, false);
+                Console.writeJumpLine("Titulo: " + listSong.getTitle() +
+                        "\nArtista: " + listSong.getArtist() +
+                        "\nTamaño: " + listSong.getSizeMB() + "KB\n", false);
+                counter++;
             }
         } catch (Exception e) {
             Console.writeJumpLine("La operación no se pudo completar, intente nuevamente...", false);

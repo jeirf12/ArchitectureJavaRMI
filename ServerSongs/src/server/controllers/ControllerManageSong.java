@@ -34,8 +34,8 @@ public class ControllerManageSong extends UnicastRemoteObject implements IContro
     public boolean saveSong(SongDTO objSong) throws RemoteException {
         boolean result = this.objSongRepository.saveSong(objSong);
         if (result) {
-            int size = this.listSong().size();
-            NotifyDTO notify = new NotifyDTO(counter + 1, objSong, size);
+            counter = this.listSong().size();
+            NotifyDTO notify = new NotifyDTO(counter + 1, objSong, counter);
             this.objManageAdministrator.notifyAdministrator(notify);
             this.objSongCopySecurity.saveCopySong(objSong);
             this.counter++;
